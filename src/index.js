@@ -35,6 +35,34 @@ function init() {
     } else {
         console.log('PushEngage: No pushengage-id found in URL');
     }
+
+    // Setup purchase button listener
+    const purchaseBtn = document.querySelector('[data-pushengage-purchase]');
+    if (purchaseBtn) {
+        purchaseBtn.addEventListener('click', function () {
+            const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+            const attributes = {
+                purchase: currentDate
+            };
+
+            console.log('PushEngage: Adding attributes', attributes);
+
+            window.PushEngage = window.PushEngage || [];
+            window.PushEngage.push(function () {
+                PushEngage.addAttributes(attributes)
+                    .then(function (response) {
+                        console.log('PushEngage: Attributes added successfully', response);
+                        displayMessage(`Attributes added: ${JSON.stringify(attributes)}`, 'green');
+                    })
+                    .catch(function (error) {
+                        console.error('PushEngage: Error adding attributes', error);
+                        displayMessage(`Error adding attributes: ${error.message}`, 'red');
+                    });
+            });
+        });
+    } else {
+        console.warn('PushEngage: Purchase button not found');
+    }
 }
 
 /**
